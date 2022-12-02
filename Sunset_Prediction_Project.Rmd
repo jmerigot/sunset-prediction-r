@@ -27,7 +27,7 @@ Have you ever sat down and watched a sunset and thought to yourself, "Wow, that 
 However, with that beauty can also come the feeling of pure disappointment when you miss a once in a lifetime sunset. It's happened to me, it's happened to you, it's happened to all of us, but never again. In fact, I remember sitting on the deck of my house one day, admiring the sunset, and I thought to myself how sad it would be if I had missed it (seen below).
 
 ```{r echo=FALSE, out.width = "100%", fig.align = "center"}
-knitr::include_graphics("C:/Users/jules/OneDrive/Desktop/Sunset_Prediction_Project/Images/sunset_1.jpg")
+knitr::include_graphics("C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/Images/sunset-1.jpg")
 ```
 
 Then it occurred to me. What if we could predict when there would be a beautiful sunset? I turned the idea over in my head for a while. Most of us are aware of how difficult it is to predict weather already, so imagine predicting a sunset... But I am not one to give up because of something so trivial. I decided that if I was able to accumulate enough data combining past sunsets and their beauty scores, past air quality data, and meteorological data from those days, I would be able to predict the beauty of a sunset on any given day. While beauty is obviously subjective, the scores on which I will be basing my ratings and predictions on have been thoroughly analyzed, and will be explained later in the Data section. If not for me, then for all my friends, family, and fellow students, I want to be able to notify them of an incoming magical moment. The goal of this project is to help those with limited free time and an appreciation for the pureness of our environment to never miss a beautiful sunset again.
@@ -343,9 +343,7 @@ sunset_folds <- vfold_cv(sunset_train, v = 10, strata = good_sunset)
 Because building models take so much computing time, we will be saving the results to an RDA file. This is done so that once we have the model we want, we can go back anytime later and load it.
 
 ```{r, class.source = "fold-show"}
-save(sunset_folds, sunset_recipe, sunset_train, sunset_test, file = "C:/Users/jules/OneDrive/Desktop/Sunset_Prediction_Project/RDA/sunset_model_setup.rda")
-
-save(sunset_folds, sunset_recipe, sunset_train, sunset_test, file = "C:/Users/jules/OneDrive/Desktop/4thYear/PSTAT-131/Final-Project-Models/RDA/Sunset_model_setup.rda")
+save(sunset_folds, sunset_recipe, sunset_train, sunset_test, file = "C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/RDA/sunset_Model_Setup.rda")
 ```
 
 # Building Prediction Models
@@ -376,15 +374,14 @@ Skip steps 3-5 for Logistic Regression, LDA, and QDA.
 Since our dataset was on the smaller side with only 538 observations, our models took less time to run then they would with much larger datasets. We now have all of our models completed and saved as well as their individual outcomes and scores. We will now load in the saved results of each model and start analyzing their individual performances.
 
 ```{r}
-load("C:/Users/jules/OneDrive/Desktop/Sunset_Prediction_Project/RDA/sunset_model_setup.rda")
-load("C:/Users/jules/OneDrive/Desktop/Sunset_Prediction_Project/RDA/sunset_logistic_regression.rda")
-load("C:/Users/jules/OneDrive/Desktop/Sunset_Prediction_Project/RDA/sunset_linear_discriminant.rda")
-load("C:/Users/jules/OneDrive/Desktop/Sunset_Prediction_Project/RDA/sunset_quadratic_discriminant.rda")
-load("C:/Users/jules/OneDrive/Desktop/Sunset_Prediction_Project/RDA/sunset_lasso_regression.rda")
-load("C:/Users/jules/OneDrive/Desktop/Sunset_Prediction_Project/RDA/sunset_decision_tree.rda")
-load("C:/Users/jules/OneDrive/Desktop/Sunset_Prediction_Project/RDA/sunset_random_forest.rda")
-#load("C:/Users/jules/OneDrive/Desktop/Sunset_Prediction_Project/RDA/sunset_support_vector.rda")
-load("C:/Users/jules/OneDrive/Desktop/4thYear/PSTAT-131/Final-Project-Models/RDA/Sunset_support_vector.rda")
+load("C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/RDA/sunset_Model_Setup.rda")
+load("C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/RDA/sunset_Logistic_Regression.rda")
+load("C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/RDA/sunset_Linear_Discriminant.rda")
+load("C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/RDA/sunset_Quadratic_Discriminant.rda")
+load("C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/RDA/sunset_Lasso_Regression.rda")
+load("C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/RDA/sunset_Decision_Tree.rda")
+load("C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/RDA/sunset_Random_Forest.rda")
+load("C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/RDA/sunset_Support_Vector_Machine.rda")
 ```
 
 ## Visualizing Results
@@ -507,7 +504,7 @@ Since our random forest model had the best overall performance, we now want to e
 A random forest model is a supervised ensemble learning technique that consists of numerous decision trees. Decision tree models tend to struggle with overfitting the training data, which is overcome in a random forest by averaging the prediction results of each decision tree and determining a final output. The random forest algorithm stacks multiple classifiers together to improve its overall performance. To get a better idea of how a random forest model works, I have provided a visualization of its process below. 
 
 ```{r echo=FALSE, out.width = "100%", fig.align = "center"}
-knitr::include_graphics("C:/Users/jules/OneDrive/Desktop/Sunset_Prediction_Project/Images/random_forest_diagram.png")
+knitr::include_graphics("C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/Images/random-forest-diagram.png")
 ```
 
 ### And the Best Model is ...
@@ -674,5 +671,5 @@ When put into perspective, our model performed much better than expected. Weathe
 
 To top it all off, here is the picture of another beautiful sunset taken from my deck in sunny Santa Barbara:
 ```{r echo=FALSE, out.width = "100%", fig.align = "center"}
-knitr::include_graphics("C:/Users/jules/OneDrive/Desktop/Sunset_Prediction_Project/Images/sunset_2.jpg")
+knitr::include_graphics("C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/Images/sunset-2.jpg")
 ```

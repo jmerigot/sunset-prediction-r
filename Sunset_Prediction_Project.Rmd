@@ -39,15 +39,15 @@ I have myself combined this data into a csv file, binding on specific date and l
 - "DETECTING AND PREDICTING BEAUTIFUL SUNSETS USING SOCIAL MEDIA DATA", a Stanford Computer Science Research Study by Emma Pierson.    
 
 A research paper conducted by a Stanford PhD student in 2016. For this study, 1.2 million sunset posts on Instagram, a picture-sharing platform, were collected and used to detect beautiful sunsets in 10 American cities over 7 months, from November of 2015 to May of 2016. For each city, 10 pictures were randomly selected from the five days with the highest amount of Instagram posts, and 10 pictures from days with a median amount of posts. These would be considered "beautiful" and "average" sunsets, respectively. Then, three research assistants were provided with one pair of
-sunset pictures at a time – one beautiful sunset, and one average sunset – in random order, and were tasked with choosing the one they felt had the more beautiful sunset. The three assistants agreed 86% of the time on average, indicating consensus about what constituted a beautiful sunset. Finally, a binary indicator variable for "beautiful sunsets" was created where a sunset with an average score in top 15% was denoted as a 1, and all others were denoted by 0. For more information on how these scores were drawn out and computed, visit the following link to the article: <https://cs.stanford.edu/~emmap1/sunset_paper.pdf>
+sunset pictures at a time – one beautiful sunset, and one average sunset – in random order, and were tasked with choosing the one they felt had the more beautiful sunset. The three assistants agreed 86% of the time on average, indicating consensus about what constituted a beautiful sunset. Finally, a binary indicator variable for "beautiful sunsets" was created where a sunset with an average score in top 15% was denoted as a 1, and all others were denoted by 0. For more information on how these scores were drawn out and computed, visit the following link to the article: [Stanford Sunset Data](https://cs.stanford.edu/~emmap1/sunset_paper.pdf)
 
 - United States Environmental Protection Agency website.    
 
-The Environmental Protection Agency is an independent executive agency of the United States federal government tasked with environmental protection matters. This page contains large files of data intended for use by people who understand the EPA ambient air quality monitoring program and data. In particular, this website was used to collect hourly data from 2015 and 2016 on four criteria gases; carbon monoxide, ground-level ozone, nitrogen dioxide, and sulfur dioxide. I downloaded the CSV files and identified the specific date location needed to match my Instagram Sunset Data in order to paste the relevant observations into my large dataset which will be displayed later in this project. The website page with data used in this project can be found here: <https://aqs.epa.gov/aqsweb/airdata/download_files.html>
+The Environmental Protection Agency is an independent executive agency of the United States federal government tasked with environmental protection matters. This page contains large files of data intended for use by people who understand the EPA ambient air quality monitoring program and data. In particular, this website was used to collect hourly data from 2015 and 2016 on four criteria gases; carbon monoxide, ground-level ozone, nitrogen dioxide, and sulfur dioxide. I downloaded the CSV files and identified the specific date location needed to match my Instagram Sunset Data in order to paste the relevant observations into my large dataset which will be displayed later in this project. The website page with data used in this project can be found here: [EPA](https://aqs.epa.gov/aqsweb/airdata/download_files.html)
 
-- VisualCrossing Weather Data & Weather API website.   
+- Visual Crossing Weather Data & Weather API website.   
 
-A provider of weather data and enterprise analysis tools to data scientists, business analysts, professionals, and academics. I used Visual Crossing's Weather Data tool to collect meteorological data from specific time frames for the specific locations that I needed to match the Instagram sunset score data. I used the coordinates from three major cities, Los Angeles, San Francisco, and San Diego, and inputed their respectived latitudes and longitudes to obtain downloadable CSV files with all the data observations I needed. I then copied this data and added it to my existing dataset, making sure to collate on specific date and location. For more information on Visual Crossing and for those interested in using their tools for their own projects, the website cna be found here: <https://www.visualcrossing.com/weather/weather-data-services#>
+A provider of weather data and enterprise analysis tools to data scientists, business analysts, professionals, and academics. I used Visual Crossing's Weather Data tool to collect meteorological data from specific time frames for the specific locations that I needed to match the Instagram sunset score data. I used the coordinates from three major cities, Los Angeles, San Francisco, and San Diego, and inputed their respective latitudes and longitudes to obtain downloadable CSV files with all the data observations I needed. I then copied this data and added it to my existing dataset, making sure to collate on specific date and location. For more information on Visual Crossing and for those interested in using their tools for their own projects, the website can be found here: [Visual Crossing](https://www.visualcrossing.com/weather/weather-data-services#)
 
 
 ```{r setup, include=FALSE}
@@ -109,7 +109,10 @@ While this data was assembled by hand, there may still be some missing data. Thi
 # plot of missing values in the data
 sunset_data %>%
   missing_plot()
+```
 
+Total number of missing data observations:
+```{r}
 # the number of missing values in the training data
 sum(is.na(sunset_data))
 ```
@@ -133,7 +136,7 @@ sunset_data$good_sunset <- factor(sunset_data$good_sunset,
                                   labels = c("No", "Yes"))
 ```
 
-One of our variables `date` which distinguishes the date of a particular sunset, is currently in mm/dd/yyyy format, which is difficult to use in a prediction or classification model, so let's extract the month and year from each value and make them their own predictors. The specific days won't matter as much here, but the particular month will have an impact since it traverses across seasons (November to May). It is commonly known that sunsets tend to be more vivid in color in the winter months, therefore there may be a significant difference in prediction results if a particular sunset's quality was evaluated in December of 2015 compared to one in May of 2016. While we're at it, let's also rename out air quality variables to something shorter so they take up less room in our visual plots later on. Don't worry, I'll explain what each one is in a bit.
+One of our variables `date` which distinguishes the date of a particular sunset, is currently in mm/dd/yyyy format, which is difficult to use in a prediction or classification model, so let's extract the month and year from each value and make them their own predictors. The specific days won't matter as much here, but the particular month will have an impact since it traverses across seasons (November to May). It is commonly known that sunsets tend to be more vivid in color in the winter months, therefore there may be a significant difference in prediction results if a particular sunset's quality was evaluated in December of 2015 compared to one in May of 2016. While we're at it, let's also rename our air quality variables to something shorter so they take up less room in our visual plots later on. Don't worry, I'll explain what each one is in a bit.
 
 ```{r, class.source = "fold-show"}
 dates <- as.POSIXct(sunset_data$date, format = "%m/%d/%Y")
@@ -153,9 +156,15 @@ Now that we've added these columns, let's make them numeric variables so they ca
 # make Month and Year numeric variables 
 sunset_data$month <- as.numeric(as.character(sunset_data$month))
 sunset_data$year <- as.numeric(as.character(sunset_data$year))
+```
 
+Below we can see the current dimensions of our dataset after removing certain variables and cleaning out the missing data values.
+```{r}
 sunset_data %>% dim()
+```
 
+Let's take quick look at our dataset by displaying the first 10 rows.
+```{r}
 sunset_data %>% head()
 ```
 
@@ -163,8 +172,8 @@ sunset_data %>% head()
 
 After removing unnecessary variables, we can get a better understanding of what each predictor that we will using represents. The variables that I selected for the true data set and that I will be using in my model recipe to predict good sunsets later on are as following:
 
--   `month`: The month that the sunset was recorded (ranges from November 2015 to May 2016) as represented by its respective number (e.g. 11 for November)\
--   `year`: The year that the sunset was recorded (either 2015 or 2016)\
+-   `month`: The month that the sunset was recorded (ranges from November 2015 to May 2016) as represented by its respective number (e.g. 11 for November)
+-   `year`: The year that the sunset was recorded (either 2015 or 2016)
 -   `city`: The city in which the sunset was recorded (either Los Angeles, San Francisco, or San Diego)
 -   `co_in_ppm`: The carbon monoxide CO) levels in the air on the given day of the sunset, measured in parts per million
 -   `no2_in_ppm`: The nitrogen dioxide (NO2) levels in the air on the given day of the sunset, measured in parts per million
@@ -305,9 +314,13 @@ sunset_split <- initial_split(sunset_data, prop = 0.75,
 sunset_train <- training(sunset_split)
 sunset_test <- testing(sunset_split)
 ```
+
+Dimensions of our sunset training dataset:
 ```{r}
 dim(sunset_train)
 ```
+
+Dimensions of our sunset testing dataset:
 ```{r}
 dim(sunset_test)
 ```
@@ -352,7 +365,12 @@ It is now finally time to build our models! Luckily for us, since our dataset is
 
 ## Performance Metric 
 
-To evaluate performance, the two most useful tools in our case are `accuracy` and `roc_auc`. The one we will be utilizing as the metric of performance is `roc_auc`, because it shows the most significant level of efficiency in a binary classification model where the data is not perfectly balanced. To explain further, the `roc_auc` metric, denoted as ROC AUC, is a method of calculating the area under the curve (AUC) for the receiver operating characteristic (ROC) curve, which is a graphical plot that illustrates the diagnostic ability of a binary classifier system as its discrimination threshold is varied.
+To evaluate performance, the two most useful tools in our case are `accuracy` and `roc_auc`. The one we will be utilizing as the metric of performance is `roc_auc`, because it shows the most significant level of efficiency in a binary classification model where the data is not perfectly balanced. To explain further, the `roc_auc` metric, denoted as ROC AUC, is a method of calculating the area under the curve (AUC) for the receiver operating characteristic (ROC) curve, which is a graphical plot that illustrates the diagnostic ability of a binary classifier system as its discrimination threshold is varied. Below are examples of ROC curves.
+
+```{r echo=FALSE, out.width = "50%", fig.align = "center"}
+knitr::include_graphics("C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/Images/roc_auc_curve.png")
+```
+Above is a visualization to help better understand a ROC curve. The area between the curve and the *Random Classifier* line is the AUC score, which increases as the curve approaches a *Perfect Classifier*. While the curve is a visualization of the ROC AUC score, the numerical AUC value between 0.5 and 1.0 is the determining metric of performance.
 
 ## Model Building Process
 
@@ -493,13 +511,13 @@ Since our random forest model had the best overall performance, we now want to e
 
 A random forest model is a supervised ensemble learning technique that consists of numerous decision trees. Decision tree models tend to struggle with overfitting the training data, which is overcome in a random forest by averaging the prediction results of each decision tree and determining a final output. The random forest algorithm stacks multiple classifiers together to improve its overall performance. To get a better idea of how a random forest model works, I have provided a visualization of its process below. 
 
-```{r echo=FALSE, out.width = "100%", fig.align = "center"}
+```{r echo=FALSE, out.width = "50%", fig.align = "center"}
 knitr::include_graphics("C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/Images/random-forest-diagram.png")
 ```
 
 ### And the Best Model is ...
 
-Random Forest 249! The random forest model #249 seemed to have performed the best overall from all the random forest models. This is on top of being the best of the seven different prediction models. Below is the model's output and scores, as well as the its associated parameters.
+Random Forest 249! The random forest model #249 seemed to have performed the best overall from all the random forest models. This is on top of being the best of the seven different prediction models. Below is the model's output and scores, as well as the its associated parameters. 
 
 ```{r}
 show_best(forest_tune_res, metric = "roc_auc") %>%

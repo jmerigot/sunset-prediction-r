@@ -97,7 +97,7 @@ We will first load the data that I have collected and delete some unnecessary va
 
 ```{r, class.source = "fold-show"}
 # loading the data
-sunset_data <- read.csv("C:/Users/jules/OneDrive/Desktop/sunset_quality_data.csv")
+sunset_data <- read.csv("C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/Sunset-Data/sunset_quality_data.csv")
 
 # cleaning predictor names
 sunset_data <- clean_names(sunset_data)
@@ -388,16 +388,6 @@ load("C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/RDA/sunset_Suppo
 
 One of the most useful tools for visualizing the results of models that have been tuned is the `autoplot` function in r. This will visualize the effects that the change in certain parameters has on our metric of choice, `roc_auc`. For the sake of space, we only display the plots of our models with the three best ROC AUC values, which will be explored and displayed in the next section.
 
-### Interesting Find
-
-Before these autoplots, however, I think it would be interesting to take a look at which predictor variables were most useful in predicting our response variable, `good_sunset`. To my surprise, the Ozone levels in the air was the most useful variable in predicting how good a sunset will be. Hey, the more you know!
-
-```{r}
-rand_tree_final_fit %>%
-  extract_fit_parsnip() %>%
-  vip()
-```
-
 ### Quadratic Discriminant Analysis
 
 Surprisingly enough, as we can see in the ROC curve plot below, our Quadratic Discriminant Analysis Model did a relatively good job of predicting our sunsets. This is a more advanced version of a linear model as it is used to find a non-linear boundary between our classifiers, and assumes that each class follows a Gaussian distribution.
@@ -414,7 +404,7 @@ In our random forest model, we are tuning three different hyperparameters. These
 - `mtry` which represents the amount of predictors that will be sampled randomly during the creation of the models,\
 - `trees` which represents the amount of trees present in the random forest model,\
 - `min_n` which represents the minimum amount of data values required to be in a tree node in order for it to be split further down the tree.\
-The ROC AUC scores seem to vary quite a lot depending on the number of trees, but overall it is clear that more trees leads to a higher ROC AUC score. The optimal node size was 7, present in the middle plot, with 6 trees, and 7 randomly selected predictors. Unless our next model can surpass this, the random forest seems to be the best model.
+The ROC AUC scores seem to vary quite a lot depending on the number of trees, but overall it is clear that more trees leads to a higher ROC AUC score. The optimal node size was 5, present in the middle plot, with 10 trees, and 2 randomly selected predictors. Unless our next model can surpass this, the random forest seems to be the best model.
 
 ```{r}
 autoplot(forest_tune_res)
@@ -489,7 +479,7 @@ sunset_results <- sunset_results %>%
 sunset_results
 ```
 
-As we can see in our tibble, the Random Forest model performed the best overall with a ROC AUC score of 0.9877, with the support vector machine close behind at 0.9715. Of course, this is only fitted on the training data, so our model still needs to perform on our testing data that we have reserved for exactly this. We will be moving forward with this Random Forest model, but we will also explore the support vector machine model's performance on the testing data for the sake of exploration. Let's now find their true performances on our testing dataset.
+As we can see in our tibble, the Random Forest model performed the best overall with a ROC AUC score of 0.9988, with the support vector machine close behind at 0.9583. Of course, this is only fitted on the training data, so our model still needs to perform on our testing data that we have reserved for exactly this. We will be moving forward with this Random Forest model, but we will also explore the support vector machine model's performance on the testing data for the sake of exploration. Let's now find their true performances on our testing dataset.
 
 # Results From Our Best Models
 
@@ -509,7 +499,7 @@ knitr::include_graphics("C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Proje
 
 ### And the Best Model is ...
 
-Random Forest 93! The random forest model #93 seemed to have performed the best overall from the 100 random forest models. This is on top of being the best of the seven different prediction models. Below is the model's output and scores, as well as the its associated parameters.
+Random Forest 249! The random forest model #249 seemed to have performed the best overall from all the random forest models. This is on top of being the best of the seven different prediction models. Below is the model's output and scores, as well as the its associated parameters.
 
 ```{r}
 show_best(forest_tune_res, metric = "roc_auc") %>%
@@ -528,7 +518,7 @@ sunset_rf_roc_auc <- augment(rand_tree_final_fit, new_data = sunset_test, type =
 
 sunset_rf_roc_auc
 ```
-With a final ROC AUC score of 0.7062 on our testing data, we can say our model did pretty good! A AUC value between 0.7 and 0.8 is generally considered a fair and acceptable result. This means that the model performed well, but could have also been much better. In our case, since we are attempting the seemingly ridiculous task of predicting how beautiful a sunset is, I would say this was a huge success! Weather is already difficult enough to predict, so to be able to say that we can relatively accurately predict the aesthetic quality of a sunset is a huge achievement.
+With a final ROC AUC score of 0.6936 on our testing data, we can say our model did pretty good! A AUC value between 0.6 and 0.7 is generally considered a fair and acceptable result. This means that the model performed alright, but could have also been much better. In our case, since we are attempting the seemingly ridiculous task of predicting how beautiful a sunset is, I would say this was a success! Weather is already difficult enough to predict, so to be able to say that we can relatively accurately predict the aesthetic quality of a sunset is a huge achievement.
 
 ### ROC Curve
 
@@ -547,7 +537,7 @@ As previously decided, we are also going to explore the results of our support v
 
 Well, to my surprise, the final ROC AUC score of our support vector machine algorithm was higher than our random forest model!    
 
-The computed Support Vector Machine model ROC AUC score on the testing dataset is as follows. As we can notice, it is about 0.04 higher than the random forest model, which is a very large margin of difference in the world of statistics and ROC AUC scores. 
+The computed Support Vector Machine model ROC AUC score on the testing dataset is as follows. As we can notice, it is about 0.02 higher than the random forest model, which is a very large margin of difference in the world of statistics and ROC AUC scores. 
 ```{r}
 sunset_svm_roc_auc <- augment(svm_final_fit, new_data = sunset_test, type = 'prob') %>%
   roc_auc(good_sunset, .pred_No) %>%
@@ -555,7 +545,7 @@ sunset_svm_roc_auc <- augment(svm_final_fit, new_data = sunset_test, type = 'pro
 
 sunset_svm_roc_auc
 ```
-With a final ROC AUC score of 0.7474, we can officially say that our support vector machine model performed better than the random forest model on our testing data.    
+With a final ROC AUC score of 0.7126, we can officially say that our support vector machine model performed better than the random forest model on our testing data.    
 
 To visualize this result, we will once again plot the ROC curve. While our curve does not exactly look like the Greek letter $\Gamma$ like we would want, it is still curving up and towards the left, thus providing a good visualization to accompany our ROC AUC score. This proves that our support vector machine did indeed perform better on the testing data than any other model.
 ```{r}

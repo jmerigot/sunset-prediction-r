@@ -4,49 +4,48 @@
 
 load("C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/RDA/sunset_Model_Setup.rda")
 
+set.seed(8488)
 
-#First, we'll set up a decision tree model and workflow. We'll tune the `cost_complexity` hyper parameter.
 
-tree_spec <- decision_tree() %>%
+# Setup a decision tree model and workflow, tune the `cost_complexity` hyper parameter
+sunset_dec_tree_spec <- decision_tree() %>%
+  set_mode("classification") %>%
   set_engine("rpart")
 
-class_tree_spec <- tree_spec %>%
-  set_mode("classification")
-
-class_tree_wf <- workflow() %>%
+sunset_dec_tree_wf <- workflow() %>%
   add_recipe(sunset_recipe) %>%
-  add_model(class_tree_spec %>% set_args(cost_complexity = tune())) 
+  add_model(sunset_dec_tree_spec %>% set_args(cost_complexity = tune())) 
 
 
-#Then, we'll use the levels `range = c(-3, -1)`. We'll also specify that the metric we want to optimize is `roc_auc`.
+# creating parameter grid to tune ranges of hyper parameters
+sunset_dt_param_grid <- grid_regular(cost_complexity(range = c(-3, -1)), levels = 10)
 
-param_grid <- grid_regular(cost_complexity(range = c(-3, -1)), levels = 10)
 
-dt_tune_res <- tune_grid(
-  class_tree_wf, 
+# fit the models to our folded data using `tune_grid()`
+sunset_dt_tune_res <- tune_grid(
+  sunset_dec_tree_wf, 
   resamples = sunset_folds, 
-  grid = param_grid, 
+  grid = sunset_dt_param_grid, 
   metrics = metric_set(yardstick::roc_auc)
 )
 
-autoplot(dt_tune_res)
+
+# find the `roc_auc` of best-performing pruned decision tree on the folds
+# use `collect_metrics()` and `arrange()`
+sunset_best_pruned_tree <- dplyr::arrange(collect_metrics(sunset_dt_tune_res), desc(mean))
+sunset_best_pruned_tree
 
 
-#Let's find the `roc_auc` of our best-performing pruned decision tree on the folds. We'll use `collect_metrics()` and `arrange()`.
-
-best_pruned_tree <- dplyr::arrange(collect_metrics(dt_tune_res), desc(mean))
-best_pruned_tree
+# select the decision tree with the best `roc_auc`
+sunset_dt_best_complexity <- select_best(sunset_dt_tune_res)
 
 
-#Using `rpart.plot`, we'll fit and visualize our best-performing pruned decision tree with the training set.
-
-best_complexity <- select_best(dt_tune_res)
-
-class_tree_final <- finalize_workflow(class_tree_wf, best_complexity)
-
-class_tree_final_fit <- fit(class_tree_final, data = sunset_train)
+#use `finalize_workflow()` and `fit()` to fit the model to the training set
+sunset_dt_final <- finalize_workflow(sunset_dec_tree_wf, sunset_dt_best_complexity)
+sunset_dt_final_fit <- fit(sunset_dt_final, data = sunset_train)
 
 
 
-save(dt_tune_res, class_tree_final_fit,
+# saving data to load into rmd file
+save(sunset_dt_tune_res, sunset_dt_final_fit,
      file = "C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/RDA/sunset_Decision_Tree.rda")

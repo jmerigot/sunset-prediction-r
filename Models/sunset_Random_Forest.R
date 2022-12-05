@@ -4,53 +4,81 @@
 
 load("C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/RDA/sunset_Model_Setup.rda")
 
+set.seed(8488)
 
 
-#Now we'll set up a random forest model and workflow. Use the `ranger` engine and set 
+# Setup a random forest model and workflow. Use the `ranger` engine and set 
 #`importance = "impurity"`. Let's also tune `mtry`, `trees`, and `min_n`.
-
-rf_spec <- rand_forest(mtry = tune(), trees = tune(), min_n = tune()) %>%
+sunset_rand_forest_spec <- rand_forest(mtry = tune(), trees = tune(), min_n = tune()) %>%
   set_engine("ranger", importance = "impurity") %>%
   set_mode("classification")
 
-rand_tree_wf <- workflow() %>%
+sunset_rand_forest_wf <- workflow() %>%
   add_recipe(sunset_recipe) %>%
-  add_model(rf_spec)
+  add_model(sunset_rand_forest_spec)
 
 
-#We'll then create a regular grid with 8 levels each. We'll choose plausible ranges for each hyperparameter.
+# creating parameter grid to tune ranges of hyper parameters
+sunset_rf_param_grid <- grid_regular(mtry(range = c(2, 15)), trees(range = c(2, 10)), 
+                                  min_n(range = c(2, 8)), levels = 8)
 
-forest_param_grid <- grid_regular(mtry(range = c(2, 15)), trees(range = c(2, 10)), 
-                                  min_n(range = c(2, 10)), levels = 8)
+
+# We'll do the below steps for both `roc_auc` and `accuracy` in order to use both in our project report
+
+#######################################################################################################
 
 
-#Next, let's specify `roc_auc` as a metric, then tune the model and print an `autoplot()` of the results.
+# ROC AUC
 
-forest_tune_res <- tune_grid(
-  rand_tree_wf, 
+# Next, let's fit the models to our folded data using `tune_grid()`
+sunset_rf_tune_res_auc <- tune_grid(
+  sunset_rand_forest_wf, 
   resamples = sunset_folds, 
-  grid = forest_param_grid, 
+  grid = sunset_rf_param_grid, 
   metrics = metric_set(yardstick::roc_auc)
 )
 
-autoplot(forest_tune_res)
+# find the `roc_auc` of best-performing random forest tree on the folds
+# use `collect_metrics()` and `arrange()`
+sunset_best_rd_auc <- dplyr::arrange(collect_metrics(sunset_rf_tune_res_auc), desc(mean))
+head(sunset_best_rd_auc)
+
+# select the random forest with the best `roc_auc`
+best_rf_complexity_auc <- select_best(sunset_rf_tune_res_auc)
+
+# use `finalize_workflow()` and `fit()` to fit the model to the training set
+sunset_rf_final_auc <- finalize_workflow(sunset_rand_forest_wf, best_rf_complexity_auc)
+sunset_rf_final_fit_auc <- fit(sunset_rf_final_auc, data = sunset_train)
 
 
-#Let's once again find the `roc_auc` of our best-performing random forest tree model on the folds. 
-#We'll use `collect_metrics()` and `arrange()`.
-
-best_rd_tree <- dplyr::arrange(collect_metrics(forest_tune_res), desc(mean))
-head(best_rd_tree)
+#######################################################################################################
 
 
+# ACCURACY
 
-best_forest_complexity <- select_best(forest_tune_res)
+# Next, let's fit the models to our folded data using `tune_grid()`
+sunset_rf_tune_res_accuracy <- tune_grid(
+  sunset_rand_forest_wf, 
+  resamples = sunset_folds, 
+  grid = sunset_rf_param_grid, 
+  metrics = metric_set(accuracy)
+)
 
-rand_tree_final <- finalize_workflow(rand_tree_wf, best_forest_complexity)
+# find the `accuracy` of best-performing random forest tree on the folds
+# use `collect_metrics()` and `arrange()`
+sunset_best_rd_accuracy <- dplyr::arrange(collect_metrics(sunset_rf_tune_res_accuracy), desc(mean))
+head(sunset_best_rd_accuracy)
 
-rand_tree_final_fit <- fit(rand_tree_final, data = sunset_train)
+# select the random forest with the best `accuracy`
+best_rf_complexity_accuracy <- select_best(sunset_rf_tune_res_accuracy)
+
+#use `finalize_workflow()` and `fit()` to fit the model to the training set
+sunset_rf_final_accuracy <- finalize_workflow(sunset_rand_forest_wf, best_rf_complexity_accuracy)
+sunset_rf_final_fit_accuracy <- fit(sunset_rf_final_accuracy, data = sunset_train)
 
 
 
-save(forest_tune_res, rand_tree_final_fit, best_rd_tree,
+# saving data to load into rmd file
+save(sunset_rf_tune_res_auc, sunset_rf_final_fit_auc, sunset_best_rd_auc,
+     sunset_rf_tune_res_accuracy, sunset_rf_final_fit_accuracy, sunset_best_rd_accuracy, 
      file = "C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/RDA/sunset_Random_Forest.rda")

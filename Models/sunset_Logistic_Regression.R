@@ -4,40 +4,29 @@
 
 load("C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/RDA/sunset_model_setup.rda")
 
+set.seed(8488)
 
-log_reg <- logistic_reg() %>% 
+
+# Setup logistical model and workflow
+sunset_log_reg <- logistic_reg() %>% 
   set_engine("glm") %>%
   set_mode("classification")
 
-log_wkflow <- workflow() %>% 
-  add_model(log_reg) %>% 
+sunset_log_wkflow <- workflow() %>% 
+  add_model(sunset_log_reg) %>% 
   add_recipe(sunset_recipe)
 
-sunset_log_fit <- fit(log_wkflow, sunset_train)
-predict(log_fit, new_data = sunset_train, type="prob")# %>% View()
 
-sunset_log_fit %>% 
-  tidy()
-
-
-log_kfold_fit <- fit_resamples(log_wkflow, sunset_folds)
-
-collect_metrics(log_kfold_fit)
-
-roc_log <- augment(sunset_log_fit, sunset_test)
+# fitting model to the training data
+sunset_log_fit <- fit(sunset_log_wkflow, sunset_train)
+predict(sunset_log_fit, new_data = sunset_train, type="prob")
 
 
-# Plotting an ROC curve on the testing data and calculating the area under the curve (AUC).
-
-# plotting the ROC curve
-roc_log %>%
-  roc_curve(good_sunset, .pred_No) %>%
-  autoplot()
-
-# calculating the AUC of the curve
-roc_log %>%
-  roc_auc(good_sunset, .pred_No)
+# fitting model to the folds
+sunset_log_kfold_fit <- fit_resamples(sunset_log_wkflow, sunset_folds)
+collect_metrics(sunset_log_kfold_fit)
 
 
-save(sunset_log_fit, roc_log, log_kfold_fit,
+# saving data to load into rmd file
+save(sunset_log_fit, sunset_log_kfold_fit,
      file = "C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/RDA/sunset_Logistic_Regression.rda")

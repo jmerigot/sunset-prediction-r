@@ -39,15 +39,15 @@ I have myself combined this data into a csv file, binding on specific date and l
 - "DETECTING AND PREDICTING BEAUTIFUL SUNSETS USING SOCIAL MEDIA DATA", a Stanford Computer Science Research Study by Emma Pierson.    
 
 A research paper conducted by a Stanford PhD student in 2016. For this study, 1.2 million sunset posts on Instagram, a picture-sharing platform, were collected and used to detect beautiful sunsets in 10 American cities over 7 months, from November of 2015 to May of 2016. For each city, 10 pictures were randomly selected from the five days with the highest amount of Instagram posts, and 10 pictures from days with a median amount of posts. These would be considered "beautiful" and "average" sunsets, respectively. Then, three research assistants were provided with one pair of
-sunset pictures at a time – one beautiful sunset, and one average sunset – in random order, and were tasked with choosing the one they felt had the more beautiful sunset. The three assistants agreed 86% of the time on average, indicating consensus about what constituted a beautiful sunset. Finally, a binary indicator variable for "beautiful sunsets" was created where a sunset with an average score in top 15% was denoted as a 1, and all others were denoted by 0. For more information on how these scores were drawn out and computed, visit the following link to the article: [Stanford Sunset Data](https://cs.stanford.edu/~emmap1/sunset_paper.pdf)
+sunset pictures at a time – one beautiful sunset, and one average sunset – in random order, and were tasked with choosing the one they felt had the more beautiful sunset. The three assistants agreed 86% of the time on average, indicating consensus about what constituted a beautiful sunset. Finally, a binary indicator variable for "beautiful sunsets" was created where a sunset with an average score in top 15% was denoted as a 1, and all others were denoted by 0. For more information on how these scores were drawn out and computed, visit the following hyperlink to the article: [Stanford Sunset Data](https://cs.stanford.edu/~emmap1/sunset_paper.pdf)
 
 - United States Environmental Protection Agency website.    
 
-The Environmental Protection Agency is an independent executive agency of the United States federal government tasked with environmental protection matters. This page contains large files of data intended for use by people who understand the EPA ambient air quality monitoring program and data. In particular, this website was used to collect hourly data from 2015 and 2016 on four criteria gases; carbon monoxide, ground-level ozone, nitrogen dioxide, and sulfur dioxide. I downloaded the CSV files and identified the specific date location needed to match my Instagram Sunset Data in order to paste the relevant observations into my large dataset which will be displayed later in this project. The website page with data used in this project can be found here: [EPA](https://aqs.epa.gov/aqsweb/airdata/download_files.html)
+The Environmental Protection Agency is an independent executive agency of the United States federal government tasked with environmental protection matters. This page contains large files of data intended for use by people who understand the EPA ambient air quality monitoring program and data. In particular, this website was used to collect hourly data from 2015 and 2016 on four criteria gases; carbon monoxide, ground-level ozone, nitrogen dioxide, and sulfur dioxide. I downloaded the CSV files and identified the specific date location needed to match my Instagram Sunset Data in order to paste the relevant observations into my large dataset which will be displayed later in this project. The website page with data used in this project can be found here: [EPA Data](https://aqs.epa.gov/aqsweb/airdata/download_files.html)
 
 - Visual Crossing Weather Data & Weather API website.   
 
-A provider of weather data and enterprise analysis tools to data scientists, business analysts, professionals, and academics. I used Visual Crossing's Weather Data tool to collect meteorological data from specific time frames for the specific locations that I needed to match the Instagram sunset score data. I used the coordinates from three major cities, Los Angeles, San Francisco, and San Diego, and inputed their respective latitudes and longitudes to obtain downloadable CSV files with all the data observations I needed. I then copied this data and added it to my existing dataset, making sure to collate on specific date and location. For more information on Visual Crossing and for those interested in using their tools for their own projects, the website can be found here: [Visual Crossing](https://www.visualcrossing.com/weather/weather-data-services#)
+A provider of weather data and enterprise analysis tools to data scientists, business analysts, professionals, and academics. I used Visual Crossing's Weather Data tool to collect meteorological data from specific time frames for the specific locations that I needed to match the Instagram sunset score data. I used the coordinates from three major cities, Los Angeles, San Francisco, and San Diego, and inputed their respective latitudes and longitudes to obtain downloadable CSV files with all the data observations I needed. I then copied this data and added it to my existing dataset, making sure to collate on specific date and location. For more information on Visual Crossing and for those interested in using their tools for their own projects, the website can be found here: [Visual Crossing Data](https://www.visualcrossing.com/weather/weather-data-services#)
 
 
 ```{r setup, include=FALSE}
@@ -80,8 +80,6 @@ tidymodels_prefer()
 
 library(knitr)
 knitr::opts_chunk$set(echo = TRUE)
-
-set.seed(8488)
 ```
 
 ## Project Outline
@@ -207,7 +205,8 @@ One important thing to note before diving deeper into building our models, is to
 # looking at the distribution of the Good Sunsets
 sunset_data %>% 
   ggplot(aes(x = good_sunset)) +
-  geom_bar()
+  geom_bar() + 
+  labs(x = "Sunset Quality", y = "# of Sunsets", title = "Distribution of the Number of Beautiful Sunsets")
 ```
 
 As we can see, while there were less than 100 sunsets that made the top 15%, an overwhelming amount of just slightly more than 450 sunsets were considered to be not as beautiful. This means that once we have built and fit our models, we'll be able to alert our friends of sunsets that are really worth it.
@@ -361,7 +360,9 @@ save(sunset_folds, sunset_recipe, sunset_train, sunset_test, file = "C:/Users/ju
 
 # Building Prediction Models
 
-It is now finally time to build our models! Luckily for us, since our dataset is relatively small, none of the models took very long to run, which I was able to use to my advantage in order to run multiple variations of our models, and tune different hyperparamaters with varrying ranges in order to produce the best performing models. However, these models still require quite a bit of computing power, and could therefore not be run directly in this R markdown file. To solve this, each individual model was ran in a separate R file with the loaded data saved above. Each model was then saved in RDA files and will be loaded below for our explorations of the results. Additionally, these models files can be found attached to this project in the respective GitHub repository. As stated earlier, we fit seven different models. These models were Logistic Regression, Linear Discriminant Analysis, Quadratic Discriminant Analysis, Lasso, Decision Tree, Random Forest, and Support Vector Machine models.
+It is now finally time to build our models! Luckily for us, since our dataset is relatively small, none of the models took very long to run, which I was able to use to my advantage in order to run multiple variations of our models, and tune different hyperparamaters with varrying ranges in order to produce the best performing models. However, these models still require quite a bit of computing power, and could therefore not be run directly in this R markdown file. To solve this, each individual model was ran in a separate R file with the loaded data saved above. Each model was then saved in RDA files and will be loaded below for our explorations of the results. Additionally, these models' files and data can be found attached to this project in the *Models* and *RDA* folders in the respective GitHub repository which can be found here: [Sunset Prediction Project](https://github.com/jmerigot/Sunset-Prediction-Project).     
+
+As stated earlier, we fit seven different models. These models were Logistic Regression, Linear Discriminant Analysis, Quadratic Discriminant Analysis, Lasso, Decision Tree, Random Forest, and Support Vector Machine models. The first three models are relatively simple and will take much less time to run. The final four models are the ones we are more interested in, particularly the Random Forest and Support Vector Machines model, as they are better fit for binary classification problems, which is exactly our case.
 
 ## Performance Metric 
 
@@ -433,7 +434,7 @@ autoplot(forest_tune_res)
 Our very last model is a support vector machine. A support vector machine algorithm is mainly used for binary classification tasks, like ours, and produces significant accuracy with less computation power. An SVM model plots each data observation as a point in n-dimensional space, where n is a number of features we have, with the value of each feature being the value of a particular coordinate. The support vectors are simply the coordinates of each individual observation. Classification is then performed by finding the hyper-plane that differentiates the two classes best. Like most of our models, the actual process of the algorithm is much more complicated, but we can see in our plot below that while our SVM model did relatively well, in our case it did not attain a higher ROC AUC score than our random forest model. However since support vector machine algorithms are still very powerful, it will still be worth exploring its testing results later on.
 
 ```{r}
-autoplot(svm_tune_res)
+autoplot(svm_auc_tune_res)
 ```
 
 ## Model Accuracies
@@ -453,19 +454,19 @@ sunset_qda_auc <- augment(sunset_qda_fit, new_data = sunset_train) %>%
   roc_auc(good_sunset, estimate = .pred_No) %>%
   select(.estimate)
 
-sunset_lasso_auc <- augment(lasso_final_fit, new_data = sunset_train) %>%
+sunset_lasso_auc <- augment(sunset_lasso_final_fit, new_data = sunset_train) %>%
   roc_auc(good_sunset, estimate = .pred_No) %>%
   select(.estimate)
 
-sunset_class_tree_auc <- augment(class_tree_final_fit, new_data = sunset_train) %>%
+sunset_decision_tree_auc <- augment(sunset_dt_final_fit, new_data = sunset_train) %>%
   roc_auc(good_sunset, estimate = .pred_No) %>%
   select(.estimate)
 
-sunset_rand_tree_auc <- augment(rand_tree_final_fit, new_data = sunset_train) %>%
+sunset_random_forest_auc <- augment(sunset_rf_final_fit_auc, new_data = sunset_train) %>%
   roc_auc(good_sunset, estimate = .pred_No) %>%
   select(.estimate)
 
-sunset_svm_auc <- augment(svm_final_fit, new_data = sunset_train) %>%
+sunset_svm_auc <- augment(sunset_svm_final_fit_auc, new_data = sunset_train) %>%
   roc_auc(good_sunset, estimate = .pred_No) %>%
   select(.estimate)
 
@@ -474,8 +475,8 @@ sunset_roc_aucs <- c(sunset_log_reg_auc$.estimate,
                            sunset_lda_auc$.estimate,
                            sunset_qda_auc$.estimate,
                            sunset_lasso_auc$.estimate,
-                           sunset_class_tree_auc$.estimate,
-                           sunset_rand_tree_auc$.estimate,
+                           sunset_decision_tree_auc$.estimate,
+                           sunset_random_forest_auc$.estimate,
                            sunset_svm_auc$.estimate)
 
 sunset_mod_names <- c("Logistic Regression",
@@ -497,7 +498,7 @@ sunset_results <- sunset_results %>%
 sunset_results
 ```
 
-As we can see in our tibble, the Random Forest model performed the best overall with a ROC AUC score of 0.9988, with the support vector machine close behind at 0.9583. Of course, this is only fitted on the training data, so our model still needs to perform on our testing data that we have reserved for exactly this. We will be moving forward with this Random Forest model, but we will also explore the support vector machine model's performance on the testing data for the sake of exploration. Let's now find their true performances on our testing dataset.
+As we can see in our tibble, the Random Forest model performed the best overall with a ROC AUC score of 0.9901, with the support vector machine close behind at 0.9583. Of course, this is only fitted on the training data, so our model still needs to perform on our testing data that we have reserved for exactly this. We will be moving forward with this Random Forest model, but we will also explore the support vector machine model's performance on the testing data for the sake of exploration. Let's now find their true performances on our testing dataset.
 
 # Results From Our Best Models
 
@@ -517,10 +518,10 @@ knitr::include_graphics("C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Proje
 
 ### And the Best Model is ...
 
-Random Forest 249! The random forest model #249 seemed to have performed the best overall from all the random forest models. This is on top of being the best of the seven different prediction models. Below is the model's output and scores, as well as the its associated parameters. 
+Random Forest 156! The random forest model #156 seemed to have performed the best overall from all the random forest models. This is on top of being the best of the seven different prediction models. Below is the model's output and scores, as well as the its associated parameters. 
 
 ```{r}
-show_best(forest_tune_res, metric = "roc_auc") %>%
+show_best(sunset_rf_tune_res_auc, metric = "roc_auc") %>%
   select(-.estimator, .config) %>%
   slice(1)
 ```
@@ -528,21 +529,21 @@ Now that we have our best overall model, we can finally fit it to our testing da
 
 ### Final ROC AUC Results
 
-Now, the moment we have all been waiting for, finding our model #93's true ROC AUC performance results on our testing dataset that we have been saving just for this. Let's take a look!
+Now, the moment we have all been waiting for, finding our model #156's true ROC AUC performance results on our testing dataset that we have been saving just for this. Let's take a look!
 ```{r}
-sunset_rf_roc_auc <- augment(rand_tree_final_fit, new_data = sunset_test, type = 'prob') %>%
+sunset_rf_roc_auc <- augment(sunset_rf_final_fit_auc, new_data = sunset_test, type = 'prob') %>%
   roc_auc(good_sunset, .pred_No) %>%
   select(.estimate)
 
 sunset_rf_roc_auc
 ```
-With a final ROC AUC score of 0.6936 on our testing data, we can say our model did pretty good! A AUC value between 0.6 and 0.7 is generally considered a fair and acceptable result. This means that the model performed alright, but could have also been much better. In our case, since we are attempting the seemingly ridiculous task of predicting how beautiful a sunset is, I would say this was a success! Weather is already difficult enough to predict, so to be able to say that we can relatively accurately predict the aesthetic quality of a sunset is a huge achievement.
+With a final ROC AUC score of 0.7075 on our testing data, we can say our model did pretty good! A AUC value between 0.7 and 0.8 is generally considered a fair and acceptable result. This means that the model performed alright, but could have also been much better. In our case, since we are attempting the seemingly ridiculous task of predicting how beautiful a sunset is, I would say this was a success! Weather is already difficult enough to predict, so to be able to say that we can relatively accurately predict the aesthetic quality of a sunset is a huge achievement.
 
 ### ROC Curve
 
 To visualize our AUC score, we will plot our ROC curve. The higher up and left the curve is, the better the model's AUC will be. As we can see below, while our curve does not perfectly resemble the top left right angle of a square, it still is curving in the right place and therefore confirms our computed AUC score above.
 ```{r}
-augment(rand_tree_final_fit, new_data = sunset_test, type = 'prob') %>%
+augment(sunset_rf_final_fit_auc, new_data = sunset_test, type = 'prob') %>%
   roc_curve(good_sunset, .pred_No) %>%
   autoplot()
 ```
@@ -557,17 +558,17 @@ Well, to my surprise, the final ROC AUC score of our support vector machine algo
 
 The computed Support Vector Machine model ROC AUC score on the testing dataset is as follows. As we can notice, it is about 0.02 higher than the random forest model, which is a very large margin of difference in the world of statistics and ROC AUC scores. 
 ```{r}
-sunset_svm_roc_auc <- augment(svm_final_fit, new_data = sunset_test, type = 'prob') %>%
+sunset_svm_roc_auc <- augment(sunset_svm_final_fit_auc, new_data = sunset_test, type = 'prob') %>%
   roc_auc(good_sunset, .pred_No) %>%
   select(.estimate)
 
 sunset_svm_roc_auc
 ```
-With a final ROC AUC score of 0.7126, we can officially say that our support vector machine model performed better than the random forest model on our testing data.    
+With a final ROC AUC score of 0.7155, we can officially say that our support vector machine model performed better than the random forest model on our testing data.    
 
 To visualize this result, we will once again plot the ROC curve. While our curve does not exactly look like the Greek letter $\Gamma$ like we would want, it is still curving up and towards the left, thus providing a good visualization to accompany our ROC AUC score. This proves that our support vector machine did indeed perform better on the testing data than any other model.
 ```{r}
-sunset_svm_roc_curve <- augment(svm_final_fit, new_data = sunset_test, type = 'prob') %>%
+sunset_svm_roc_curve <- augment(sunset_svm_final_fit_auc, new_data = sunset_test, type = 'prob') %>%
   roc_curve(good_sunset, .pred_No) %>%
   autoplot()
 
@@ -587,33 +588,33 @@ Now that we have our model completed and polish, let's put it to use. How useful
 Remember that stunning sunset picture at the top of the document? Well, I collected all the necessary meteorological and air quality data from that particular day in Santa Barbara, so let's see if our model predicts that it is indeed a beautiful sunset.
 ```{r}
 sunset_good_test_example <- data.frame(
-  month = 11,
-  co_in_ppm = 1.0, #1.0
-  no2_in_ppb = 32.0,
-  so2_in_ppb = 0.2,
-  ozone_in_ppm = 0.134, #0.034
-  aqi = 39, #30
-  tempmax = 73.4,
-  tempmin = 59.9,
-  temp = 65.7,
-  dew = 55.6,
-  humidity = 70.3,
+  month = 1,
+  co_in_ppm = 1.5,
+  no2_in_ppb = 26.0,
+  so2_in_ppb = 0.0,
+  ozone_in_ppm = 0.135,
+  aqi = 25,
+  tempmax = 57.7,
+  tempmin = 53.0,
+  temp = 50.0,
+  dew = 44.4,
+  humidity = 54.0,
   precip = 0.01,
-  precipprob = 100,
-  precipcover = 4.17,
-  windspeed = 10.8,
-  winddir = 238.5,
-  sealevelpressure = 1009.8,
-  cloudcover = 74.1,
-  visibility = 9.4,
-  moonphase = 0.70
+  precipprob = 0,
+  precipcover = 0.00,
+  windspeed = 9.8,
+  winddir = 280.0,
+  sealevelpressure = 1019.9,
+  cloudcover = 28.5,
+  visibility = 9.8,
+  moonphase = 0.50
 )
 ```
 
 ```{r, class.source = "fold-show"}
-predict(rand_tree_final_fit, sunset_good_test_example, type = "class")
+predict(sunset_rf_final_fit_auc, sunset_good_test_example, type = "class")
 ```
-Woohoo! As we can see, the model correctly predicted that the sunset would be beautiful. How's that for 86% accuracy? This is very encouraging however, because it means that our model is successful. While the ROC AUC score already demonstrated that our model performed well, it is reassuring to watch it succeed when put to the test.
+Woohoo! As we can see, the model correctly predicted that the sunset would be beautiful. This is very encouraging, because it means that our model is successful. While the ROC AUC score already demonstrated that our model performed well, it is reassuring to watch it succeed when put to the test.
 
 ## Bad Sunset Example
 
@@ -639,33 +640,33 @@ sunset_bad_test_example <- data.frame(
   sealevelpressure = 1015.3,
   cloudcover = 0.3,
   visibility = 9.7,
-  moonphase = 0.65
+  moonphase = 0.65 
 )
 ```
 
 ```{r, class.source = "fold-show"}
-predict(rand_tree_final_fit, sunset_bad_test_example, type = "class")
+predict(sunset_rf_final_fit_auc, sunset_bad_test_example, type = "class")
 ```
-Success again! Now we know for sure that our model is able to predict both good and bad sunsets. This is to be taken with a grain of salt of course, since our model accuracy is still only 86%. This means that it is possible that the model could be fed data associated with a beautiful sunset, and it could output a result labeling it as a bad sunset. However, at 86% accuracy, I feel confident saying that our model was not only successful, but was also a great demonstration of the power of machine learning techniques in our current world.
+Success again! Now we know for sure that our model is able to predict both good and bad sunsets. This is to be taken with a grain of salt of course, since our model accuracy is obviously not perfect. This means that it is possible that the model could be fed data associated with a beautiful sunset, and it could output a result labeling it as a bad sunset. However, I feel confident saying that our model was not only successful, but was also a great demonstration of the power of machine learning techniques in our current world.
 
 
 # Extension: Final Model Accuracy
 
-While the ROC AUC score was our primary performance metric, I also calculated the Accuracy of model #93 on our testing data in order to provide a simpler explanation of our model results.
+While the ROC AUC score was our primary performance metric, I also calculated the `Accuracy` of model #156 on our testing data in order to provide a simpler explanation of our model results.
 ```{r}
-augment(rand_tree_final_fit, new_data = sunset_test, type = 'prob') %>%
+augment(sunset_rf_final_fit_accuracy, new_data = sunset_test, type = 'prob') %>%
   accuracy(good_sunset, .pred_class) %>%
   select(.estimate)
 ```
-Our random forest model was able to predict beautiful sunsets in our testing data with about 85% accuracy. That's awesome! I can now confidently tell my friends whether or not a sunset is really worth dropping everything to watch, with about 85% accuracy.
+Our random forest model was able to predict beautiful sunsets in our testing data with about 83.1% accuracy. That's awesome! I can now confidently tell my friends whether or not a sunset is really worth dropping everything to watch, with about 81.6% accuracy.
 
 **The Support Vector Machine accuracy:**
 ```{r}
-augment(svm_final_fit, new_data = sunset_test, type = 'prob') %>%
+augment(sunset_svm_final_fit_accuracy, new_data = sunset_test, type = 'prob') %>%
   accuracy(good_sunset, .pred_class) %>%
   select(.estimate)
 ```
-With an accuracy of 84.6%, we can see that our support vector machine indeed did not perform as well as our random forest model on our testing data. However, the margin of difference is not huge, which goes to show that this is still a powerful and useful model that could still be used to predict the quality of sunsets, just with slightly lower overall accuracy.
+With an accuracy of 84.6%, we can see that our support vector machine indeed performed better than our random forest model on our testing data. However, the margin of difference is not huge, which goes to show that both are still powerful and useful models that could still be used to predict the quality of sunsets, just with a random forest model having slightly lower overall accuracy.
 
 # Conclusion
 

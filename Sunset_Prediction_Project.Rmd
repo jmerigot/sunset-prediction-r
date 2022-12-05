@@ -409,10 +409,10 @@ One of the most useful tools for visualizing the results of models that have bee
 
 ### Quadratic Discriminant Analysis
 
-Surprisingly enough, as we can see in the ROC curve plot below, our Quadratic Discriminant Analysis Model did a relatively good job of predicting our sunsets. This is a more advanced version of a linear model as it is used to find a non-linear boundary between our classifiers, and assumes that each class follows a Gaussian distribution.
+Surprisingly enough, as we can see in the ROC curve plot below, our Quadratic Discriminant Analysis Model did a relatively good job of predicting our sunsets when it was fit back on our training data. This is a more advanced version of a linear model as it is used to find a non-linear boundary between our classifiers, and assumes that each class follows a Gaussian distribution. 
 
 ```{r}
-roc_qda %>%
+sunset_roc_qda %>%
   roc_curve(good_sunset, .pred_No) %>%
   autoplot()
 ```
@@ -426,7 +426,7 @@ In our random forest model, we are tuning three different hyperparameters. These
 The ROC AUC scores seem to vary quite a lot depending on the number of trees, but overall it is clear that more trees leads to a higher ROC AUC score. The optimal node size was 5, present in the middle plot, with 10 trees, and 2 randomly selected predictors. Unless our next model can surpass this, the random forest seems to be the best model.
 
 ```{r}
-autoplot(forest_tune_res)
+autoplot(sunset_rf_tune_res_auc)
 ```
 
 ### Support Vector Machine (SVM)
@@ -434,7 +434,7 @@ autoplot(forest_tune_res)
 Our very last model is a support vector machine. A support vector machine algorithm is mainly used for binary classification tasks, like ours, and produces significant accuracy with less computation power. An SVM model plots each data observation as a point in n-dimensional space, where n is a number of features we have, with the value of each feature being the value of a particular coordinate. The support vectors are simply the coordinates of each individual observation. Classification is then performed by finding the hyper-plane that differentiates the two classes best. Like most of our models, the actual process of the algorithm is much more complicated, but we can see in our plot below that while our SVM model did relatively well, in our case it did not attain a higher ROC AUC score than our random forest model. However since support vector machine algorithms are still very powerful, it will still be worth exploring its testing results later on.
 
 ```{r}
-autoplot(svm_auc_tune_res)
+autoplot(sunset_svm_auc_tune_res)
 ```
 
 ## Model Accuracies
@@ -498,7 +498,7 @@ sunset_results <- sunset_results %>%
 sunset_results
 ```
 
-As we can see in our tibble, the Random Forest model performed the best overall with a ROC AUC score of 0.9901, with the support vector machine close behind at 0.9583. Of course, this is only fitted on the training data, so our model still needs to perform on our testing data that we have reserved for exactly this. We will be moving forward with this Random Forest model, but we will also explore the support vector machine model's performance on the testing data for the sake of exploration. Let's now find their true performances on our testing dataset.
+As we can see in our tibble, the Random Forest model performed the best overall with a ROC AUC score of 0.9901, with the support vector machine close behind at 0.9612. Of course, this is only fitted on the training data, so our model still needs to perform on our testing data that we have reserved for exactly this. We will be moving forward with this Random Forest model, but we will also explore the support vector machine model's performance on the testing data for the sake of exploration. Let's now find their true performances on our testing dataset.
 
 # Results From Our Best Models
 

@@ -27,6 +27,11 @@ sunset_qda_kfold_fit <- fit_resamples(sunset_qda_wkflow, sunset_folds)
 collect_metrics(sunset_qda_kfold_fit)
 
 
+# using `augment()` to create a roc curve using our QDA fitted model
+sunset_roc_qda <- augment(sunset_qda_fit, sunset_train)
+
+
+
 # saving data to load into rmd file
-save(sunset_qda_fit, sunset_qda_kfold_fit,  
+save(sunset_qda_fit, sunset_qda_kfold_fit, sunset_roc_qda, 
      file = "C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/RDA/sunset_Quadratic_Discriminant.rda")

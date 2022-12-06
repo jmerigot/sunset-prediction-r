@@ -19,11 +19,11 @@ sunset_qda_wkflow <- workflow() %>%
 
 # fitting model to the training data
 sunset_qda_fit <- fit(sunset_qda_wkflow, sunset_train)
-predict(sunset_qda_fit, new_data = sunset_train, type="prob")# %>% View()
+predict(sunset_qda_fit, new_data = sunset_train, type="prob")
 
 
 # fitting model to the folds
-sunset_qda_kfold_fit <- fit_resamples(sunset_qda_wkflow, sunset_folds)
+sunset_qda_kfold_fit <- fit_resamples(sunset_qda_wkflow, sunset_folds, control = control_grid(save_pred = TRUE))
 collect_metrics(sunset_qda_kfold_fit)
 
 

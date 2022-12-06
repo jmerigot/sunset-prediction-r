@@ -38,8 +38,7 @@ I have myself combined this data into a csv file, binding on specific date and l
 
 - "DETECTING AND PREDICTING BEAUTIFUL SUNSETS USING SOCIAL MEDIA DATA", a Stanford Computer Science Research Study by Emma Pierson.    
 
-A research paper conducted by a Stanford PhD student in 2016. For this study, 1.2 million sunset posts on Instagram, a picture-sharing platform, were collected and used to detect beautiful sunsets in 10 American cities over 7 months, from November of 2015 to May of 2016. For each city, 10 pictures were randomly selected from the five days with the highest amount of Instagram posts, and 10 pictures from days with a median amount of posts. These would be considered "beautiful" and "average" sunsets, respectively. Then, three research assistants were provided with one pair of
-sunset pictures at a time – one beautiful sunset, and one average sunset – in random order, and were tasked with choosing the one they felt had the more beautiful sunset. The three assistants agreed 86% of the time on average, indicating consensus about what constituted a beautiful sunset. Finally, a binary indicator variable for "beautiful sunsets" was created where a sunset with an average score in top 15% was denoted as a 1, and all others were denoted by 0. For more information on how these scores were drawn out and computed, visit the following hyperlink to the article: [Stanford Sunset Data](https://cs.stanford.edu/~emmap1/sunset_paper.pdf)
+A research paper conducted by a Stanford PhD student in 2016. For this study, 1.2 million sunset posts on Instagram, a picture-sharing platform, were collected and used to detect beautiful sunsets in 10 American cities over 7 months, from November of 2015 to May of 2016. For each city, 10 pictures were randomly selected from the five days with the highest amount of Instagram posts, and 10 pictures from days with a median amount of posts. These would be considered "beautiful" and "average" sunsets, respectively. Then, three research assistants were provided with one pair of sunset pictures at a time – one beautiful sunset, and one average sunset – in random order, and were tasked with choosing the one they felt had the more beautiful sunset. The three assistants agreed 86% of the time on average, indicating consensus about what constituted a beautiful sunset. Finally, a binary indicator variable for "beautiful sunsets" was created where a sunset with an average score in top 15% was denoted as a 1, and all others were denoted by 0. For more information on how these scores were drawn out and computed, visit the following hyperlink to the article: [Stanford Sunset Data](https://cs.stanford.edu/~emmap1/sunset_paper.pdf)
 
 - United States Environmental Protection Agency website.    
 
@@ -230,9 +229,17 @@ Wow those colors almost resemble those present during a sunset, how crazy. I was
 Air Quality Index, also known as AQI, is a predictor of the quality of a sunset. In the case of the many forest fires that California has experienced over the past few years, the particles released by the burning of the forests produces an orange-ish color in the sky. While these particles and smoke and dangerous for living creatures to breathe, they also make for some beautiful and vivid orange sunsets. On the other hand, cleaner air also allows for less haze and therefore clearer sunsets, so both way work in favor of a good sunset. As we can see in the plot below, the distribution of good sunsets is present equally on the higher end and lower end of the AQI spectrum, but with more density of observations under an AQI of 40 (considered clean air). On the other hand, poorer sunsets are much more frequent when the AQI is lower, and thus when the air is cleaner.
 
 ```{r}
-ggplot(sunset_data, aes(aqi)) + 
+sunset_data %>%
+  dplyr::select("aqi", "good_sunset") %>%
+  dplyr::mutate(aqi = cut(aqi, breaks = 
+                             seq(min(aqi), max(aqi), by = 0.5),
+                           include.lowest = TRUE)) %>%
+  group_by(aqi) %>%
+  na.omit(aqi) %>%
+  ggplot(aes(aqi)) +
   geom_bar(aes(fill = good_sunset)) +
-  scale_fill_manual(values = c("#0066CC", "#FF6633"))
+  scale_fill_manual(values = c("#0066CC", "#FF6633")) + 
+  theme(axis.text.x = element_text(angle = 90))
 ```
 
 ### Temperature
@@ -240,9 +247,17 @@ ggplot(sunset_data, aes(aqi)) +
 Temperature can also significantly affect the quality of a sunset. As discussed earlier, winter sunsets tend to be more vivid during the winter. However, these more beautiful sunsets are usually due to less humidity and cleaner air due to rain and snow. As we can see below, good sunsets seem to be more frequent when temperatures are lower, below 60 degrees Fahrenheit. For those that are not aware, below 60 is considered cold in California, but one can imagine how these may look when it gets even colder...
 
 ```{r}
-ggplot(sunset_data, aes(temp)) + 
+sunset_data %>%
+  dplyr::select("temp", "good_sunset") %>%
+  dplyr::mutate(temp = cut(temp, breaks = 
+                             seq(min(temp), max(temp), by = 0.5),
+                           include.lowest = TRUE)) %>%
+  group_by(temp) %>%
+  na.omit(temp) %>%
+  ggplot(aes(temp)) +
   geom_bar(aes(fill = good_sunset)) +
-  scale_fill_manual(values = c("#0066CC", "#FF6633"))
+  scale_fill_manual(values = c("#0066CC", "#FF6633")) + 
+  theme(axis.text.x = element_text(angle = 90))
 ```
 
 ### Humidity
@@ -250,9 +265,17 @@ ggplot(sunset_data, aes(temp)) +
 It is known that humidity will affect the quality of sunsets and their colors. Lower humidity will produce more vibrant colors, whereas high humidity conditions will fade the colors because of the water content in the atmosphere. In the plot below we see that indeed there is a higher concentration of goo sunsets when the humidity is lower, and a much higher concentration of poorer sunsets when the humidity is higher.
 
 ```{r}
-ggplot(sunset_data, aes(humidity)) + 
+sunset_data %>%
+  dplyr::select("humidity", "good_sunset") %>%
+  dplyr::mutate(humidity = cut(humidity, breaks = 
+                             seq(min(humidity), max(humidity), by = 1.5),
+                           include.lowest = TRUE)) %>%
+  group_by(humidity) %>%
+  na.omit(humidity) %>%
+  ggplot(aes(humidity)) +
   geom_bar(aes(fill = good_sunset)) +
-  scale_fill_manual(values = c("#0066CC", "#FF6633"))
+  scale_fill_manual(values = c("#0066CC", "#FF6633")) + 
+  theme(axis.text.x = element_text(angle = 90))
 ```
 
 ### Cloud Cover
@@ -260,10 +283,17 @@ ggplot(sunset_data, aes(humidity)) +
 One can imagine that if the skies are cloudy, then the sunset will not be great because there won't be much of a sunset in the first place. On the flip side, if there are no clouds at all, the sunset will be pristine, but it may lack the added decoration and added touch of color from the setting sun's reflection on some scattered clouds. Too many clouds is bad, but too few may not be great either, so where's the sweet spot? Well, as we can see below, while a majority of both good and bad sunsets occur when the cloud cover is 0%, a lot of good sunsets seem to occur between a cloud cover of 25% and 50%.
 
 ```{r, warning=FALSE}
-ggplot(sunset_data, aes(cloudcover)) + 
+sunset_data %>%
+  dplyr::select("cloudcover", "good_sunset") %>%
+  dplyr::mutate(cloudcover = cut(cloudcover, breaks = 
+                             seq(min(cloudcover), max(cloudcover), by = 1.5),
+                           include.lowest = TRUE)) %>%
+  group_by(cloudcover) %>%
+  na.omit(cloudcover) %>%
+  ggplot(aes(cloudcover)) +
   geom_bar(aes(fill = good_sunset)) +
-  scale_fill_manual(values = c("#0066CC", "#FF6633")) +
-  ylim(0, 30)
+  scale_fill_manual(values = c("#0066CC", "#FF6633")) + 
+  theme(axis.text.x = element_text(angle = 90))
 ```
 
 ### Sea Level Pressure
@@ -271,9 +301,17 @@ ggplot(sunset_data, aes(cloudcover)) +
 As for sea level pressure, the quality of a sunset may vary. This is less of a deciding factor of the quality itself, but more of the colors of the sunset. High pressure sunsets are often a brilliant red while low pressure sunsets are a golden-yellow. As can be seen below, good sunsets seems to be normally distributed along sea level pressure but are skewed slightly left in favor of higher sea lever pressure, while poorer sunsets tend to be more present at lower pressures.
 
 ```{r}
-ggplot(sunset_data, aes(sealevelpressure)) + 
+sunset_data %>%
+  dplyr::select("sealevelpressure", "good_sunset") %>%
+  dplyr::mutate(sealevelpressure = cut(sealevelpressure, breaks = 
+                             seq(min(sealevelpressure), max(sealevelpressure), by = 0.5),
+                           include.lowest = TRUE)) %>%
+  group_by(sealevelpressure) %>%
+  na.omit(sealevelpressure) %>%
+  ggplot(aes(sealevelpressure)) +
   geom_bar(aes(fill = good_sunset)) +
-  scale_fill_manual(values = c("#0066CC", "#FF6633"))
+  scale_fill_manual(values = c("#0066CC", "#FF6633")) + 
+  theme(axis.text.x = element_text(angle = 90))
 ```
 
 ### Nitrogen Dioxide (NO2)
@@ -281,9 +319,17 @@ ggplot(sunset_data, aes(sealevelpressure)) +
 One that I did not expect myself, was how the nitrogen dioxide levels in the air could affect a sunset's quality. This is because nitrogen and oxygen make up most of the molecules in our atmosphere, so any gas or aerosol in the air will scatter rays of sunlight into separate wavelengths of light. Therefore, when there are more aerosols in the atmosphere, more sunlight is scattered, which results in more colorful skies and more vivid sunsets. As we can see, when the nitrogen dioxide levels in parts per billion in the air are higher, there tend to be more good sunsets, while more poorer sunsets occur when the nitrogen dioxide levels are lower.
 
 ```{r}
-ggplot(sunset_data, aes(no2_in_ppb)) + 
+sunset_data %>%
+  dplyr::select("no2_in_ppb", "good_sunset") %>%
+  dplyr::mutate(no2_in_ppb = cut(no2_in_ppb, breaks = 
+                             seq(min(no2_in_ppb), max(no2_in_ppb), by = 1),
+                           include.lowest = TRUE)) %>%
+  group_by(no2_in_ppb) %>%
+  na.omit(no2_in_ppb) %>%
+  ggplot(aes(no2_in_ppb)) +
   geom_bar(aes(fill = good_sunset)) +
-  scale_fill_manual(values = c("#0066CC", "#FF6633"))
+  scale_fill_manual(values = c("#0066CC", "#FF6633")) + 
+  theme(axis.text.x = element_text(angle = 90))
 ```
 
 ### Month
@@ -377,16 +423,16 @@ Above is a visualization to help better understand a ROC curve. The area between
 
 Most models tend to follow a similar process, with the exceptions of the Logistic Regression, Linear Discriminant Analysis, and Quadratic Discriminant Analysis models, which are simpler and quicker. The general workflow of the model building process constituted of the following steps:    
 
-1. Set up the model by specifying what type of model it is, setting its engine, and setting its mode (which was always classification).  
-2. Set up the workflow, add the new model, and add our established recipe.   
+1. We first set up the model by specifying what type of model it is, then we set its engine and set its mode. In our case, our mode was always set to 'classification' due to the nature of our project goal.  
+2. We then set up the workflow for the model, add the new model, and add our established sunset recipe.   
 
-Skip steps 3-5 for Logistic Regression, LDA, and QDA.   
+We will skip the steps 3-5 for Logistic Regression, Linear Discriminant Analysis, and Quadratic Discriminant Analysis, since they are simpler models that do not require hyperparameters to be tuned.   
 
-3. Set up the tuning grid with the parameters that we want tuned, and how many different levels of tuning for each parameter
-4. Tune the model with the specific hyperparameters of choice
-5. Select the most accurate model from all of the tuning, finalize the workflow with those tuning parameters
-6. Fit that model with our workflow to the training data set
-7. Save our results to an RDA file in order to load them back into our main project file.
+3. We then set up the tuning grid with the parameters that we want tuned, as well as set the ranges for how many different levels of tuning we want for each parameter.
+4. We will then tune the model with the specific hyperparameters of choice.
+5. After which we will select the most accurate model from the tuning grid, and then finalize the workflow with those specific tuning parameters.
+6. We then fit that model with our workflow to our sunset training dataset.
+7. Finally, we will save our results to an RDA file in order to load them back into our main project file.
 
 # Model Results
 
@@ -409,7 +455,13 @@ One of the most useful tools for visualizing the results of models that have bee
 
 ### Quadratic Discriminant Analysis
 
-Surprisingly enough, as we can see in the ROC curve plot below, our Quadratic Discriminant Analysis Model did a relatively good job of predicting our sunsets when it was fit back on our training data. This is a more advanced version of a linear model as it is used to find a non-linear boundary between our classifiers, and assumes that each class follows a Gaussian distribution. 
+A quadratic discriminant analysis is a statistical classifier model that uses a quadratic decision surface to separate measurements of two or more classes of objects or events. It is a more advanced version of a linear model as it is used to find a non-linear boundary between our classifiers, and assumes that each class follows a Gaussian distribution. Below, we can see a visualization of a linear discriminant analysis (LDA) model and a quadratic discriminant analysis (QDA) model. While the LDA model seeks a linear boundary between the classifier data, the QDA model displays a more effective and accurate curved boundary.
+
+```{r echo=FALSE, out.width = "50%", fig.align = "center"}
+knitr::include_graphics("C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/Images/plot_lda_vs_qda.png")
+```
+
+Surprisingly enough, as we can see in the ROC curve plot below, our Quadratic Discriminant Analysis Model did a relatively good job of predicting our sunsets when it was fit back on our training data. 
 
 ```{r}
 sunset_roc_qda %>%
@@ -419,11 +471,17 @@ sunset_roc_qda %>%
 
 ### Random Forest
 
+A random forest model is a supervised ensemble learning technique that consists of numerous decision trees. Decision tree models tend to struggle with over fitting the training data, which is overcome in a random forest by averaging the prediction results of each decision tree and determining a final output. The random forest algorithm stacks multiple classifiers together to improve its overall performance. To get a better idea of how a random forest model works, I have provided a visualization of its process below. 
+
+```{r echo=FALSE, out.width = "50%", fig.align = "center"}
+knitr::include_graphics("C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/Images/random-forest-diagram.png")
+```
+
 In our random forest model, we are tuning three different hyperparameters. These parameters are:\
 - `mtry` which represents the amount of predictors that will be sampled randomly during the creation of the models,\
 - `trees` which represents the amount of trees present in the random forest model,\
 - `min_n` which represents the minimum amount of data values required to be in a tree node in order for it to be split further down the tree.\
-The ROC AUC scores seem to vary quite a lot depending on the number of trees, but overall it is clear that more trees leads to a higher ROC AUC score. The optimal node size was 5, present in the middle plot, with 10 trees, and 2 randomly selected predictors. Unless our next model can surpass this, the random forest seems to be the best model.
+The ROC AUC scores seem to vary quite a lot depending on the number of trees, but overall it is clear that more trees leads to a higher ROC AUC score. The optimal node size was 4, present in the middle plot, with 5 trees, and 7 randomly selected predictors. Unless our next model can surpass this, the random forest seems to be the best model.
 
 ```{r}
 autoplot(sunset_rf_tune_res_auc)
@@ -431,7 +489,13 @@ autoplot(sunset_rf_tune_res_auc)
 
 ### Support Vector Machine (SVM)
 
-Our very last model is a support vector machine. A support vector machine algorithm is mainly used for binary classification tasks, like ours, and produces significant accuracy with less computation power. An SVM model plots each data observation as a point in n-dimensional space, where n is a number of features we have, with the value of each feature being the value of a particular coordinate. The support vectors are simply the coordinates of each individual observation. Classification is then performed by finding the hyper-plane that differentiates the two classes best. Like most of our models, the actual process of the algorithm is much more complicated, but we can see in our plot below that while our SVM model did relatively well, in our case it did not attain a higher ROC AUC score than our random forest model. However since support vector machine algorithms are still very powerful, it will still be worth exploring its testing results later on.
+Our very last model is a support vector machine. A support vector machine algorithm is mainly used for binary classification tasks, like ours, and produces significant accuracy with less computation power. An SVM model plots each data observation as a point in n-dimensional space, where n is a number of features we have, with the value of each feature being the value of a particular coordinate. The support vectors are simply the coordinates of each individual observation. Classification is then performed by finding the hyperplane that differentiates the two classes best. Below is a diagram to visualize how a support vector machine proceeds and what the hyperplanes look like.
+
+```{r echo=FALSE, out.width = "50%", fig.align = "center"}
+knitr::include_graphics("C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/Images/support-vector-machine-diagram.png")
+```
+
+Like most of our models, the actual process of the algorithm is much more complicated, but we can see in our plot below that while our SVM model did relatively well, in our case it did not attain a higher ROC AUC score than our random forest model. However since support vector machine algorithms are still very powerful, it will still be worth exploring its testing results later on.
 
 ```{r}
 autoplot(sunset_svm_auc_tune_res)
@@ -498,7 +562,7 @@ sunset_results <- sunset_results %>%
 sunset_results
 ```
 
-As we can see in our tibble, the Random Forest model performed the best overall with a ROC AUC score of 0.9901, with the support vector machine close behind at 0.9612. Of course, this is only fitted on the training data, so our model still needs to perform on our testing data that we have reserved for exactly this. We will be moving forward with this Random Forest model, but we will also explore the support vector machine model's performance on the testing data for the sake of exploration. Let's now find their true performances on our testing dataset.
+As we can see in our tibble, the Random Forest model performed the best overall with a ROC AUC score of 0.9901, with the support vector machine close behind at 0.9612. Of course, this is only fitted on the training data, so our models still need to perform on our testing data that we have reserved for exactly this. We will be moving forward with this Random Forest model, but we will also explore the support vector machine model's performance on the testing data for the sake of exploration. Let's now find their true performances on our testing dataset.
 
 # Results From Our Best Models
 
@@ -506,15 +570,7 @@ Now that we know that our best model was a random forest, we can progress to ana
 
 ## Random Forest Model
 
-Since our random forest model had the best overall performance, we now want to examine how strong it is on data it has not seen yet. The high ROC AUC scores you saw above were the models' ability to predict a sunset's quality using the same data it was originally trained on, thus explaining its strong results. However, before we discover its true ability, we will explore further what a random forest model is and how it works.
-
-### What is a Random Forest?
-
-A random forest model is a supervised ensemble learning technique that consists of numerous decision trees. Decision tree models tend to struggle with overfitting the training data, which is overcome in a random forest by averaging the prediction results of each decision tree and determining a final output. The random forest algorithm stacks multiple classifiers together to improve its overall performance. To get a better idea of how a random forest model works, I have provided a visualization of its process below. 
-
-```{r echo=FALSE, out.width = "50%", fig.align = "center"}
-knitr::include_graphics("C:/Users/jules/OneDrive/Desktop/Sunset-Prediction-Project/Images/random-forest-diagram.png")
-```
+Since our random forest model had the best overall performance, we now want to examine how strong it is on data it has not seen yet. The high ROC AUC scores you saw above were the models' ability to predict a sunset's quality using the same data it was originally trained on, thus explaining its strong results.
 
 ### And the Best Model is ...
 
@@ -556,7 +612,7 @@ As previously decided, we are also going to explore the results of our support v
 
 Well, to my surprise, the final ROC AUC score of our support vector machine algorithm was higher than our random forest model!    
 
-The computed Support Vector Machine model ROC AUC score on the testing dataset is as follows. As we can notice, it is about 0.02 higher than the random forest model, which is a very large margin of difference in the world of statistics and ROC AUC scores. 
+The computed Support Vector Machine model ROC AUC score on the testing dataset is as follows. As we can notice, it is only about 0.008 higher than the random forest model, which is not a huge margin of difference, but can still very statistically significant in the world of statistics and ROC AUC scores. 
 ```{r}
 sunset_svm_roc_auc <- augment(sunset_svm_final_fit_auc, new_data = sunset_test, type = 'prob') %>%
   roc_auc(good_sunset, .pred_No) %>%
@@ -577,7 +633,11 @@ sunset_svm_roc_curve
 
 ### Why is this Happening?
 
+There is a multitude of reasons why we may be seeing these results. The reason is most likely a combination of multiple. Support Vector Machines are known to be very powerful classification models, and work better than most prediction algorithms when provided with limited data. In our case, since we only have 538 observations, it would make sense that a support vector machine would produce a better output than a random forest which thrives on larger datasets.    
 
+Additionally, support vector machines perform well on all sorts of data, while random forests are generally better fit for data with both numerical and categorical data. Our particular sunset dataset that we used in our recipe and our models includes only numerical data, which could be negatively impacting the performance of the random forest, thus making our support vector machines the better choice here.    
+
+Overall, it seems that the difference in performance between a support vector machine and a random forest lies in its application, the type of data its provided with, and the end goal. In our case of creating a binary classification model with limited data, the support vector machine is the more performant model.
 
 # Putting the Model to the Test
 
@@ -588,26 +648,26 @@ Now that we have our model completed and polish, let's put it to use. How useful
 Remember that stunning sunset picture at the top of the document? Well, I collected all the necessary meteorological and air quality data from that particular day in Santa Barbara, so let's see if our model predicts that it is indeed a beautiful sunset.
 ```{r}
 sunset_good_test_example <- data.frame(
-  month = 1,
-  co_in_ppm = 1.5,
-  no2_in_ppb = 26.0,
-  so2_in_ppb = 0.0,
-  ozone_in_ppm = 0.135,
-  aqi = 25,
-  tempmax = 57.7,
-  tempmin = 53.0,
-  temp = 50.0,
-  dew = 44.4,
-  humidity = 54.0,
-  precip = 0.01,
+  month = 12,
+  co_in_ppm = 1.8,
+  no2_in_ppb = 62.0,
+  so2_in_ppb = 1.5,
+  ozone_in_ppm = 0.015,
+  aqi = 60,
+  tempmax = 82.3,
+  tempmin = 54.0,
+  temp = 66.3,
+  dew = 37.9,
+  humidity = 38.0,
+  precip = 0.00,
   precipprob = 0,
   precipcover = 0.00,
-  windspeed = 9.8,
-  winddir = 280.0,
-  sealevelpressure = 1019.9,
-  cloudcover = 28.5,
-  visibility = 9.8,
-  moonphase = 0.50
+  windspeed = 3.8,
+  winddir = 276.3,
+  sealevelpressure = 1016.6,
+  cloudcover = 0.4,
+  visibility = 9.6,
+  moonphase = 0.96
 )
 ```
 
@@ -653,6 +713,8 @@ Success again! Now we know for sure that our model is able to predict both good 
 # Extension: Final Model Accuracy
 
 While the ROC AUC score was our primary performance metric, I also calculated the `Accuracy` of model #156 on our testing data in order to provide a simpler explanation of our model results.
+
+**The Random Forest accuracy:**
 ```{r}
 augment(sunset_rf_final_fit_accuracy, new_data = sunset_test, type = 'prob') %>%
   accuracy(good_sunset, .pred_class) %>%

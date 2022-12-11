@@ -1,0 +1,38 @@
+############################################
+### Sunset Prediciton Project - Codebook ###
+############################################
+
+List of variables that are present in the final Sunset dataset yet used for the binary classification modeling:
+
+
+Repsonse variable:
+
+-   `good_sunset`: Whether or not a sunset will be beautiful on a given day, as a binary variable (1 = "Yes", 0 = "No").
+
+Predictor Variables:
+
+-   `month`: The month that the sunset was recorded (ranges from November 2015 to May 2016) as represented by its respective number (e.g. 11 for November)
+-   `year`: The year that the sunset was recorded (either 2015 or 2016)
+-   `city`: The city in which the sunset was recorded (either Los Angeles, San Francisco, or San Diego)
+-   `co_in_ppm`: The carbon monoxide CO) levels in the air on the given day of the sunset, measured in parts per million
+-   `no2_in_ppm`: The nitrogen dioxide (NO2) levels in the air on the given day of the sunset, measured in parts per million
+-   `so2_in_ppm`: The sulfur dioxide (SO2) levels in the air on the given day of the sunset, measured in parts per million
+-   `ozone_in_ppm`: The ozone (O3) levels in the air on the given day of the sunset, measured in parts per million
+-   `aqi`: The air quality index on the given day of the sunset in the city it took place
+-   `tempmax`: The maximum recorded temperature on the given day of the sunset in the city in took place
+-   `tempmin`: The minimum recorded temperature on the given day of the sunset in the city in took place
+-   `temp`: The average recorded temperature on the given day of the sunset in the city in took place
+-   `dew`: The dew point is the temperature at which the air can exactly hold the amount of moisture present, in degrees Fahrenheit
+-   `humidity`: The humidity present in the air on the given day of the sunset, measured in g.m-3, which is units of grams of water vapor 
+                per cubic meter of air.
+-   `precip`: The precipitation on the given day, measured in inches of rainfall depth
+-   `precipprob`: The probability of precipitation on the given day of the sunset
+-   `precipcover`: The precipitation Coverage which is the percentage of time during the reporting window that the precipitation actually occurred
+-   `windspeed`: The wind speed on the given day, measured in miles per hour (mph)
+-   `winddir`: The wind direction on the given day, reported in degrees and describes the direction from which the wind emanates. A direction of 0 degrees 
+	       is due North on a compass. A direction of 180 degrees is due South. A direction of 270 degrees would indicate a wind blowing in from the west.
+-   `sealevelpressure`: The sea-level pressure on the given day, measured in metric millibars
+-   `cloudcover`: The percentage of the sky that is covered by clouds on the given day
+-   `visibility`: Visibility on the given day, measured in miles of the greatest distance the average human eye can distinguish objects 
+-   `moonphase`: The phase of the moon on the given day, where 1 represents a full moon, 0 represents a new moon, 
+		 0.5 represents a first or third quarter (half of the moon visible), and so on.
